@@ -1,0 +1,133 @@
+{
+  "title": "ml-training-platform — SLO dashboard",
+  "uid": "ml-training-platform",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "10s",
+  "time": { "from": "now-1h", "to": "now" },
+  "templating": { "list": [] },
+  "panels": [
+    {
+      "id": 1,
+      "title": "Request rate (RPS) by path",
+      "type": "timeseries",
+      "gridPos": { "h": 6, "w": 12, "x": 0, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "Prometheus" },
+      "targets": [
+        { "expr": "sum(rate(http_requests_total[1m])) by (handler)", "legendFormat": "{{handler}}" }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "/generate latency p50 / p95 / p99 (ms)  —  SLO p99 < 500ms",
+      "type": "timeseries",
+      "gridPos": { "h": 6, "w": 12, "x": 12, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "Prometheus" },
+      "targets": [
+        { "expr": "1000 * histogram_quantile(0.50, sum(rate(http_request_duration_seconds_bucket{handler=\"/generate\"}[5m])) by (le))", "legendFormat": "p50" },
+        { "expr": "1000 * histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{handler=\"/generate\"}[5m])) by (le))", "legendFormat": "p95" },
+        { "expr": "1000 * histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket{handler=\"/generate\"}[5m])) by (le))", "legendFormat": "p99" }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": { "mode": "absolute", "steps": [
+            { "color": "green", "value": null },
+            { "color": "red",   "value": 500 }
+          ]}
+        }
+      }
+    },
+    {
+      "id": 3,
+      "title": "/generate error rate (5xx / total)  —  SLO < 0.1%",
+      "type": "timeseries",
+      "gridPos": { "h": 6, "w": 12, "x": 0, "y": 6 },
+      "datasource": { "type": "prometheus", "uid": "Prometheus" },
+      "targets": [
+        { "expr": "sum(rate(http_requests_total{handler=\"/generate\",status=~\"5..\"}[5m])) / sum(rate(http_requests_total{handler=\"/generate\"}[5m]))", "legendFormat": "5xx rate" }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Saturation (CPU / mem) per pod",
+      "type": "timeseries",
+      "gridPos": { "h": 6, "w": 12, "x": 12, "y": 6 },
+      "datasource": { "type": "prometheus", "uid": "Prometheus" },
+      "targets": [
+        { "expr": "rate(process_cpu_seconds_total[1m])", "legendFormat": "cpu cores" },
+        { "expr": "process_resident_memory_bytes / 1024 / 1024", "legendFormat": "rss MB" }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "Training submit p99 (ms)  —  SLO < 500ms",
+      "type": "timeseries",
+      "gridPos": { "h": 6, "w": 12, "x": 0, "y": 12 },
+      "datasource": { "type": "prometheus", "uid": "Prometheus" },
+      "targets": [
+        { "expr": "1000 * histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket{handler=~\"/jobs/.*\"}[5m])) by (le))", "legendFormat": "submit p99" }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": { "mode": "absolute", "steps": [
+            { "color": "green", "value": null },
+            { "color": "red",   "value": 500 }
+          ]}
+        }
+      }
+    },
+    {
+      "id": 6,
+      "title": "Drift detector recall  —  SLO >= 0.9",
+      "type": "timeseries",
+      "gridPos": { "h": 6, "w": 12, "x": 12, "y": 12 },
+      "datasource": { "type": "prometheus", "uid": "Prometheus" },
+      "targets": [
+        { "expr": "drift_detector_recall", "legendFormat": "recall" }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": { "mode": "absolute", "steps": [
+            { "color": "red",   "value": null },
+            { "color": "green", "value": 0.9 }
+          ]}
+        }
+      }
+    },
+    {
+      "id": 7,
+      "title": "Rollback (registry.promote) p99 (s)  —  SLO < 30s",
+      "type": "stat",
+      "gridPos": { "h": 6, "w": 12, "x": 0, "y": 18 },
+      "datasource": { "type": "prometheus", "uid": "Prometheus" },
+      "targets": [
+        { "expr": "histogram_quantile(0.99, sum(rate(registry_promote_duration_seconds_bucket[5m])) by (le))", "legendFormat": "promote p99" }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": { "mode": "absolute", "steps": [
+            { "color": "green", "value": null },
+            { "color": "red",   "value": 30 }
+          ]}
+        }
+      }
+    },
+    {
+      "id": 8,
+      "title": "SLO burn-rate (1h / 6h, /generate 5xx vs 0.1% budget)",
+      "type": "stat",
+      "gridPos": { "h": 6, "w": 12, "x": 12, "y": 18 },
+      "datasource": { "type": "prometheus", "uid": "Prometheus" },
+      "targets": [
+        {
+          "expr": "(sum(rate(http_requests_total{handler=\"/generate\",status=~\"5..\"}[1h])) / sum(rate(http_requests_total{handler=\"/generate\"}[1h]))) / 0.001",
+          "legendFormat": "1h burn (×budget)"
+        },
+        {
+          "expr": "(sum(rate(http_requests_total{handler=\"/generate\",status=~\"5..\"}[6h])) / sum(rate(http_requests_total{handler=\"/generate\"}[6h]))) / 0.001",
+          "legendFormat": "6h burn (×budget)"
+        }
+      ]
+    }
+  ]
+}

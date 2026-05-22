@@ -1,0 +1,94 @@
+name: ci
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install project (best-effort)
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f pyproject.toml ]; then
+            pip install -e . || pip install -e .[dev] || true
+          fi
+          if [ -f requirements.txt ]; then
+            pip install -r requirements.txt || true
+          fi
+          if [ -f requirements-dev.txt ]; then
+            pip install -r requirements-dev.txt || true
+          fi
+          pip install ruff pytest httpx pytest-asyncio || true
+
+      - name: Lint (ruff, non-blocking)
+        continue-on-error: true
+        run: ruff check . || true
+
+      - name: Tests (best-effort)
+        run: |
+          if [ -d tests ] || [ -d test ] || ls test_*.py 2>/dev/null | grep -q . ; then
+            pytest -x --maxfail=5 -q || exit_code=$?
+            exit ${exit_code:-0}
+          else
+            echo "No tests detected — skipping."
+          fi
+
+  docker-build:
+    runs-on: ubuntu-latest
+    needs: lint-and-test
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Locate Dockerfile
+        id: dockerfile
+        run: |
+          if   [ -f Dockerfile ];         then echo "path=Dockerfile"         >> $GITHUB_OUTPUT
+          elif [ -f deploy/Dockerfile ];  then echo "path=deploy/Dockerfile"  >> $GITHUB_OUTPUT
+          else echo "path=" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Skip if no Dockerfile
+        if: steps.dockerfile.outputs.path == ''
+        run: echo "::notice::No Dockerfile found — skipping image build."
+
+      - name: Set up Buildx
+        if: steps.dockerfile.outputs.path != ''
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        if: steps.dockerfile.outputs.path != ''
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build & push image
+        if: steps.dockerfile.outputs.path != ''
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ${{ steps.dockerfile.outputs.path }}
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}:latest
+            ghcr.io/${{ github.repository }}:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

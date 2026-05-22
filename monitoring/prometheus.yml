@@ -1,0 +1,55 @@
+global:
+  scrape_interval: 5s
+  evaluation_interval: 15s
+  external_labels:
+    service: "ml-training-platform"
+
+scrape_configs:
+  - job_name: "ml-training-platform"
+    metrics_path: /metrics
+    static_configs:
+      - targets: ["service:8000"]  # docker-compose service name
+        labels:
+          env: local
+
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["localhost:9090"]
+
+# Alert rules — paste under rule_files: ["alerts.yml"] when extracted.
+# Inlined here as a starter for the audit. Targets come from docs/DESIGN.md.
+#
+# groups:
+#   - name: slo
+#     rules:
+#       - alert: GenerateHighP99Latency
+#         expr: histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket{handler="/generate"}[5m])) by (le)) > 0.5
+#         for: 10m
+#         labels: { severity: page }
+#         annotations: { summary: "/generate p99 > 500ms for 10m (SLO: <500ms)" }
+#       - alert: TrainingSubmitHighP99
+#         expr: histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket{handler=~"/jobs/.*"}[5m])) by (le)) > 0.5
+#         for: 10m
+#         labels: { severity: page }
+#         annotations: { summary: "training job submit p99 > 500ms for 10m" }
+#       - alert: GenerateHighErrorRate
+#         expr: |
+#           sum(rate(http_requests_total{handler="/generate",status=~"5.."}[5m]))
+#             / sum(rate(http_requests_total{handler="/generate"}[5m])) > 0.001
+#         for: 5m
+#         labels: { severity: page }
+#         annotations: { summary: "/generate error rate > 0.1% for 5m" }
+#       - alert: DriftRecallLow
+#         expr: drift_detector_recall < 0.9
+#         for: 2h
+#         labels: { severity: page }
+#         annotations: { summary: "drift detector recall < 0.9 (SLO floor)" }
+#       - alert: RollbackTooSlow
+#         expr: histogram_quantile(0.99, sum(rate(registry_promote_duration_seconds_bucket[5m])) by (le)) > 30
+#         for: 5m
+#         labels: { severity: page }
+#         annotations: { summary: "registry promote (rollback) p99 > 30s" }
+#       - alert: SaturationCPU
+#         expr: avg(rate(process_cpu_seconds_total[1m])) > 0.85
+#         for: 10m
+#         labels: { severity: warn }

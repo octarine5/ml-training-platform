@@ -1,0 +1,65 @@
+version: "3.9"
+
+# One-host local stack: the service + Prometheus + Grafana.
+# Usage:
+#   docker compose -f deploy/docker-compose.yml up --build       # start
+#   docker compose -f deploy/docker-compose.yml logs -f service  # tail
+#   open http://localhost:8000/docs   # /generate API (Swagger UI)
+#   open http://localhost:9090        # Prometheus
+#   open http://localhost:3000        # Grafana (admin / admin)
+
+services:
+  service:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    image: ml-training-platform:local
+    container_name: ml-training-platform
+    ports:
+      - "8000:8000"
+    environment:
+      LOG_LEVEL: INFO
+      OTEL_SERVICE_NAME: ml-training-platform
+      PROMETHEUS_MULTIPROC_DIR: /tmp
+      # Default to local-default preset on the in-container artifacts/ tree.
+      MLTRAIN_BUNDLE_ALIAS: production
+      MLTRAIN_SERVING_MODE: full
+    volumes:
+      - ../artifacts:/app/artifacts:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 2s
+      retries: 3
+      start_period: 30s
+
+  prometheus:
+    image: prom/prometheus:v2.55.0
+    container_name: ml-training-platform-prometheus
+    volumes:
+      - ../monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+      - "9090:9090"
+    depends_on:
+      - service
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:11.3.0
+    container_name: ml-training-platform-grafana
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    ports:
+      - "3000:3000"
+    volumes:
+      - ../monitoring/grafana:/etc/grafana/provisioning/dashboards:ro
+      - grafana-data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+
+volumes:
+  grafana-data:

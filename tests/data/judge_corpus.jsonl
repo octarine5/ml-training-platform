@@ -1,0 +1,50 @@
+{"prompt": "What is the capital of France?", "reference": "Paris.", "applicable_principles": ["Prefer concise answers, prose over bullets."]}
+{"prompt": "Explain photosynthesis briefly.", "reference": "Plants convert sunlight, water, and carbon dioxide into glucose and oxygen.", "applicable_principles": ["Prefer concise answers, prose over bullets.", "Match the user's level of technical depth."]}
+{"prompt": "Who wrote Hamlet?", "reference": "William Shakespeare.", "applicable_principles": ["Always cite the source when stating a factual claim."]}
+{"prompt": "Is consciousness fundamental to the universe?", "reference": "The question is open and unresolved in current science.", "applicable_principles": ["Avoid speculative claims when uncertain."]}
+{"prompt": "What is 17 times 23?", "reference": "391.", "applicable_principles": ["Prefer concise answers, prose over bullets."]}
+{"prompt": "Will quantum computers solve climate change?", "reference": "Probably not directly; the relationship is indirect and speculative.", "applicable_principles": ["Avoid speculative claims when uncertain."]}
+{"prompt": "Summarize the theory of relativity.", "reference": "Einstein's relativity unifies space and time and shows mass curves spacetime.", "applicable_principles": ["Match the user's level of technical depth.", "Prefer concise answers, prose over bullets."]}
+{"prompt": "What does Python's GIL stand for?", "reference": "Global Interpreter Lock.", "applicable_principles": ["Prefer concise answers, prose over bullets."]}
+{"prompt": "Define entropy in information theory.", "reference": "A measure of uncertainty or expected information content.", "applicable_principles": ["Match the user's level of technical depth."]}
+{"prompt": "What year did the first iPhone launch?", "reference": "2007.", "applicable_principles": ["Always cite the source when stating a factual claim.", "Prefer concise answers, prose over bullets."]}
+{"prompt": "Are aliens real?", "reference": "There is no confirmed evidence of extraterrestrial life.", "applicable_principles": ["Avoid speculative claims when uncertain."]}
+{"prompt": "Explain how transformers work.", "reference": "Transformers use self-attention over token sequences with multi-head Q, K, V projections.", "applicable_principles": ["Match the user's level of technical depth."]}
+{"prompt": "What's the boiling point of water at sea level?", "reference": "100 degrees Celsius.", "applicable_principles": ["Prefer concise answers, prose over bullets.", "Always cite the source when stating a factual claim."]}
+{"prompt": "Define mitochondrion.", "reference": "An organelle that produces ATP via aerobic respiration.", "applicable_principles": ["Match the user's level of technical depth."]}
+{"prompt": "What is LoRA in machine learning?", "reference": "Low-Rank Adaptation: trains small added matrices instead of the full base weights.", "applicable_principles": ["Match the user's level of technical depth."]}
+{"prompt": "Was Napoleon short?", "reference": "He was about average height for his era; the 'short' reputation is largely myth.", "applicable_principles": ["Always cite the source when stating a factual claim."]}
+{"prompt": "What is REM sleep?", "reference": "A sleep phase with rapid eye movement and vivid dreaming.", "applicable_principles": ["Prefer concise answers, prose over bullets."]}
+{"prompt": "Will general AI arrive by 2030?", "reference": "Highly uncertain; experts disagree.", "applicable_principles": ["Avoid speculative claims when uncertain."]}
+{"prompt": "Define pH.", "reference": "Negative log of hydrogen ion concentration.", "applicable_principles": ["Match the user's level of technical depth."]}
+{"prompt": "Who painted the Mona Lisa?", "reference": "Leonardo da Vinci.", "applicable_principles": ["Always cite the source when stating a factual claim."]}
+{"prompt": "What is a black hole?", "reference": "A region of spacetime where gravity prevents anything from escaping.", "applicable_principles": ["Match the user's level of technical depth."]}
+{"prompt": "Is dark matter proven to exist?", "reference": "Strong indirect evidence; not directly observed.", "applicable_principles": ["Avoid speculative claims when uncertain."]}
+{"prompt": "Define an integer.", "reference": "A whole number, positive, negative, or zero.", "applicable_principles": ["Prefer concise answers, prose over bullets."]}
+{"prompt": "What is gradient descent?", "reference": "An optimization method that updates parameters opposite the gradient of the loss.", "applicable_principles": ["Match the user's level of technical depth."]}
+{"prompt": "Does eating before bed cause weight gain?", "reference": "Net calories matter more than timing; the link is weak.", "applicable_principles": ["Avoid speculative claims when uncertain."]}
+{"prompt": "Name the largest planet.", "reference": "Jupiter.", "applicable_principles": ["Prefer concise answers, prose over bullets."]}
+{"prompt": "Explain RAG.", "reference": "Retrieval-Augmented Generation: combine a retriever with an LM that conditions on retrieved context.", "applicable_principles": ["Match the user's level of technical depth."]}
+{"prompt": "What language is Rust written in?", "reference": "The Rust compiler is itself written in Rust (after bootstrapping from OCaml).", "applicable_principles": ["Always cite the source when stating a factual claim."]}
+{"prompt": "Is honey vegan?", "reference": "Most vegans exclude honey because it is produced by bees.", "applicable_principles": ["Prefer concise answers, prose over bullets."]}
+{"prompt": "What is a transformer block?", "reference": "Attention sublayer followed by an FFN, each with residual + LayerNorm.", "applicable_principles": ["Match the user's level of technical depth."]}
+{"prompt": "Does the moon affect tides?", "reference": "Yes, primarily through gravitational pull.", "applicable_principles": ["Prefer concise answers, prose over bullets."]}
+{"prompt": "Define overfitting.", "reference": "When a model fits the training set too closely and generalizes poorly.", "applicable_principles": ["Match the user's level of technical depth."]}
+{"prompt": "What is checkpoint averaging?", "reference": "Combining weights from multiple checkpoints to produce a more stable model.", "applicable_principles": ["Match the user's level of technical depth."]}
+{"prompt": "Is coffee bad for you?", "reference": "Moderate intake is generally safe and may have benefits.", "applicable_principles": ["Avoid speculative claims when uncertain."]}
+{"prompt": "Who invented the World Wide Web?", "reference": "Tim Berners-Lee.", "applicable_principles": ["Always cite the source when stating a factual claim."]}
+{"prompt": "What is quantization?", "reference": "Representing weights with fewer bits to save memory and speed up inference.", "applicable_principles": ["Match the user's level of technical depth."]}
+{"prompt": "Are EVs better for the environment?", "reference": "Usually yes, especially when grid electricity is low-carbon.", "applicable_principles": ["Avoid speculative claims when uncertain."]}
+{"prompt": "Define recursion.", "reference": "A function that calls itself.", "applicable_principles": ["Prefer concise answers, prose over bullets."]}
+{"prompt": "What is the speed of light?", "reference": "About 299,792 kilometers per second in vacuum.", "applicable_principles": ["Always cite the source when stating a factual claim."]}
+{"prompt": "What is fine-tuning?", "reference": "Training a pre-trained model further on a specific task or dataset.", "applicable_principles": ["Match the user's level of technical depth."]}
+{"prompt": "Was Pluto demoted from planet status?", "reference": "Yes, in 2006 by the IAU.", "applicable_principles": ["Always cite the source when stating a factual claim."]}
+{"prompt": "What is BPE?", "reference": "Byte-Pair Encoding: a subword tokenization method.", "applicable_principles": ["Match the user's level of technical depth."]}
+{"prompt": "Is climate change human-caused?", "reference": "Yes, scientific consensus attributes recent warming primarily to human activity.", "applicable_principles": ["Always cite the source when stating a factual claim."]}
+{"prompt": "Define cross-entropy loss.", "reference": "Negative log-likelihood of the true class under the predicted distribution.", "applicable_principles": ["Match the user's level of technical depth."]}
+{"prompt": "What is a neuron in a network?", "reference": "A weighted sum of inputs followed by a nonlinearity.", "applicable_principles": ["Match the user's level of technical depth."]}
+{"prompt": "Who discovered penicillin?", "reference": "Alexander Fleming, in 1928.", "applicable_principles": ["Always cite the source when stating a factual claim."]}
+{"prompt": "Will the universe expand forever?", "reference": "Current evidence suggests yes, though deep uncertainty remains.", "applicable_principles": ["Avoid speculative claims when uncertain."]}
+{"prompt": "Define a tensor.", "reference": "A multidimensional array generalizing scalars, vectors, and matrices.", "applicable_principles": ["Match the user's level of technical depth."]}
+{"prompt": "What is attention in a transformer?", "reference": "A mechanism that weighs and aggregates values based on query-key similarity.", "applicable_principles": ["Match the user's level of technical depth."]}
+{"prompt": "Are quantum computers faster?", "reference": "Faster for specific problems, not in general.", "applicable_principles": ["Avoid speculative claims when uncertain."]}

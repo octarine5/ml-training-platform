@@ -1,0 +1,101 @@
+name: loadtest
+
+# Nightly load test against the service's docker-compose stack.
+# Captures locust CSVs as a workflow artifact + a one-line summary in the job log.
+# Tolerant by design — services with broken compose or missing locustfile won't fail the job.
+
+on:
+  schedule:
+    - cron: "23 8 * * *"   # 08:23 UTC daily (~01:23 PT)
+  workflow_dispatch:
+    inputs:
+      users:
+        description: "Concurrent users"
+        default: "100"
+      duration:
+        description: "Run duration (e.g. 3m)"
+        default: "3m"
+
+jobs:
+  load:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install locust
+        run: pip install locust httpx
+
+      - name: Locate compose file
+        id: compose
+        run: |
+          if   [ -f docker-compose.yml ];        then echo "path=docker-compose.yml" >> $GITHUB_OUTPUT
+          elif [ -f deploy/docker-compose.yml ]; then echo "path=deploy/docker-compose.yml" >> $GITHUB_OUTPUT
+          else echo "path=" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Boot stack
+        if: steps.compose.outputs.path != ''
+        run: |
+          docker compose -f ${{ steps.compose.outputs.path }} up -d --build
+          for i in $(seq 1 30); do
+            if curl -fsS http://localhost:8000/health 2>/dev/null; then
+              echo "service ready"; break
+            fi
+            sleep 2
+          done
+
+      - name: Skip if no compose
+        if: steps.compose.outputs.path == ''
+        run: echo "::notice::No docker-compose found — skipping load test."
+
+      - name: Locate locustfile
+        id: lf
+        run: |
+          if   [ -f loadtest/locustfile.py ]; then echo "path=loadtest/locustfile.py" >> $GITHUB_OUTPUT
+          elif [ -f locustfile.py ];          then echo "path=locustfile.py" >> $GITHUB_OUTPUT
+          else echo "path=" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Run locust
+        if: steps.compose.outputs.path != '' && steps.lf.outputs.path != ''
+        continue-on-error: true
+        run: |
+          mkdir -p loadtest-results
+          USERS="${{ github.event.inputs.users || '100' }}"
+          DURATION="${{ github.event.inputs.duration || '3m' }}"
+          locust -f ${{ steps.lf.outputs.path }} \
+            --host=http://localhost:8000 \
+            --users=$USERS --spawn-rate=20 \
+            --run-time=$DURATION --headless \
+            --csv=loadtest-results/run \
+            --html=loadtest-results/report.html \
+            --loglevel=INFO || echo "locust exited non-zero (recorded in artifact)"
+
+      - name: Summarize
+        if: always() && steps.compose.outputs.path != '' && steps.lf.outputs.path != ''
+        run: |
+          if [ -f loadtest-results/run_stats.csv ]; then
+            echo "## Load test summary" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            cat loadtest-results/run_stats.csv >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Tear down
+        if: always() && steps.compose.outputs.path != ''
+        run: docker compose -f ${{ steps.compose.outputs.path }} down -v || true
+
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: loadtest-${{ github.run_number }}
+          path: loadtest-results/
+          retention-days: 14
+          if-no-files-found: ignore

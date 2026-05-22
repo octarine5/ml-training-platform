@@ -1,0 +1,12 @@
+{
+  "base_model": "Qwen/Qwen2.5-0.5B-Instruct",
+  "domain_tag": "finance-smoke",
+  "dataset": "gbharti/finance-alpaca",
+  "steps": 5,
+  "lora_rank": 16,
+  "lora_alpha": 32.0,
+  "trainable_params": 2162688,
+  "final_loss": 2.947445273399353,
+  "max_seq_len": 512,
+  "created_at": "2026-05-22T22:50:15.389043Z"
+}

@@ -1,0 +1,95 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ml-training-platform
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ml-training-platform
+  namespace: ml-training-platform
+  labels: { app: ml-training-platform }
+spec:
+  replicas: 2
+  selector:
+    matchLabels: { app: ml-training-platform }
+  strategy:
+    type: RollingUpdate
+    rollingUpdate: { maxSurge: 1, maxUnavailable: 0 }
+  template:
+    metadata:
+      labels: { app: ml-training-platform }
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8000"
+        prometheus.io/path: "/metrics"
+    spec:
+      containers:
+        - name: app
+          image: ml-training-platform:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - { name: http, containerPort: 8000 }
+          env:
+            - { name: LOG_LEVEL, value: INFO }
+            - { name: OTEL_SERVICE_NAME, value: ml-training-platform }
+            - { name: MLTRAIN_BUNDLE_ALIAS, value: production }
+            - { name: MLTRAIN_SERVING_MODE, value: full }
+          # Serving footprint is dominated by the loaded MiniTransformer weights;
+          # local-default fp32 is ~12 MB, 256L-base int8 is ~1 GB. Limits target
+          # the larger end so the same manifest serves both presets.
+          resources:
+            requests: { cpu: "500m", memory: "1Gi" }
+            limits:   { cpu: "2",    memory: "4Gi" }
+          livenessProbe:
+            httpGet: { path: /health, port: http }
+            initialDelaySeconds: 30   # model load happens before /health flips
+            periodSeconds: 10
+          readinessProbe:
+            httpGet: { path: /ready, port: http }
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          volumeMounts:
+            - { name: artifacts, mountPath: /app/artifacts, readOnly: true }
+      volumes:
+        - name: artifacts
+          persistentVolumeClaim:
+            claimName: ml-training-platform-artifacts
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: ml-training-platform-artifacts
+  namespace: ml-training-platform
+spec:
+  accessModes: ["ReadOnlyMany"]
+  resources:
+    requests: { storage: 20Gi }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ml-training-platform
+  namespace: ml-training-platform
+spec:
+  selector: { app: ml-training-platform }
+  ports:
+    - { name: http, port: 80, targetPort: 8000 }
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: ml-training-platform
+  namespace: ml-training-platform
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: ml-training-platform
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target: { type: Utilization, averageUtilization: 70 }

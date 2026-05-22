@@ -21,3 +21,96 @@ checkpoints/
 *.ckpt
 *.pt
 *.bin
+
+# --- appended by project-archiving-logistics ---
+# --- Python -----------------------------------------------------------------
+*.pyo
+.Python
+.tox/
+
+# --- Virtual envs -----------------------------------------------------------
+ENV/
+*.venv/
+contexthub_venv/
+
+# --- Node -------------------------------------------------------------------
+node_modules/
+.npm/
+.yarn/
+.pnp.*
+.next/
+.nuxt/
+.cache/
+.vite/
+.parcel-cache/
+
+# Tool-managed local installs (node binaries, JDKs, kafka tarballs etc.)
+**/.local/
+*.tgz
+*.tar.gz
+*.tar.bz2
+*.tar.xz
+*.zip
+*.jar
+*.dylib
+*.dll
+
+# --- IDEs / OS --------------------------------------------------------------
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+.ipynb_checkpoints/
+
+# --- Logs & runtime ---------------------------------------------------------
+logs/
+*.pid
+*.seed
+*.pid.lock
+
+# --- ML / data artifacts (large binaries should not live in git) ------------
+*.pth
+*.safetensors
+*.safetensors.zst
+*.gguf
+*.onnx
+*.h5
+*.pkl
+*.pickle
+*.npz
+*.parquet
+*.feather
+*.arrow
+weights/
+models/cache/
+datasets/
+data/raw/
+data/processed/
+mlruns/
+wandb/
+artifacts/phase_checkpoints/
+artifacts/registry/
+artifacts/checkpoints/
+
+# Allow tiny sample artifacts (committed under artifacts/samples/)
+!artifacts/samples/**
+
+# --- Load test outputs ------------------------------------------------------
+loadtest/run_*.csv
+loadtest/run_*.html
+loadtest-results/
+traffic.jsonl
+
+# --- Local secrets / config -------------------------------------------------
+*.env.local
+.envrc
+secrets/
+credentials.json
+*.pem
+*.key
+
+# --- Coverage / temp --------------------------------------------------------
+coverage/
+tmp/
+temp/

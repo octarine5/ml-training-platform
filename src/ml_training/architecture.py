@@ -164,3 +164,117 @@ class ArchitectureAnalyzer:
             reverse=True,
         )
         return sorted_layers[:top_k]
+
+
+@dataclass(frozen=True)
+class TransformerSpec:
+    """Hyperparameter spec for a decoder-only transformer."""
+
+    num_layers: int
+    num_heads: int
+    d_model: int
+    d_ff: int
+    vocab_size: int
+    max_seq_len: int
+    dtype: str = "float32"
+
+    def __post_init__(self) -> None:
+        if self.d_model % self.num_heads != 0:
+            raise ValueError(
+                f"d_model ({self.d_model}) must be divisible by num_heads ({self.num_heads})"
+            )
+
+
+_PRESETS: dict[str, TransformerSpec] = {
+    "local-default": TransformerSpec(
+        num_layers=6, num_heads=4, d_model=128, d_ff=512,
+        vocab_size=8000, max_seq_len=256,
+    ),
+    "medium": TransformerSpec(
+        num_layers=8, num_heads=8, d_model=256, d_ff=1024,
+        vocab_size=8000, max_seq_len=256,
+    ),
+    "large": TransformerSpec(
+        num_layers=12, num_heads=8, d_model=384, d_ff=1536,
+        vocab_size=8000, max_seq_len=256,
+    ),
+    "xl": TransformerSpec(
+        num_layers=16, num_heads=12, d_model=576, d_ff=2304,
+        vocab_size=8000, max_seq_len=256,
+    ),
+    "256L-base": TransformerSpec(
+        num_layers=256, num_heads=8, d_model=512, d_ff=2048,
+        vocab_size=32000, max_seq_len=512,
+    ),
+}
+
+
+class TransformerArchitecture(ModelArchitecture):
+    """Planning/profiling spec for a decoder-only transformer.
+
+    Each transformer block is expanded into LayerConfigs for Q, K, V, O, FFN1, FFN2
+    so the existing ArchitectureAnalyzer (FLOPs, memory, split points) works on it.
+    This class does NOT materialize a real nn.Module. Use models.transformer.MiniTransformer
+    for the runnable PyTorch model.
+    """
+
+    SUBLAYERS = ("q", "k", "v", "o", "ffn1", "ffn2")
+
+    def __init__(self, spec: TransformerSpec, name: str = "transformer") -> None:
+        super().__init__(name=name)
+        self.spec = spec
+        self._build_blocks()
+        self._built = True
+
+    def _build_blocks(self) -> None:
+        """Expand each block into 6 LayerConfigs (Q, K, V, O, FFN1, FFN2)."""
+        d = self.spec.d_model
+        f = self.spec.d_ff
+        dtype = self.spec.dtype
+        for _block in range(self.spec.num_layers):
+            for sublayer in self.SUBLAYERS:
+                if sublayer in ("q", "k", "v", "o"):
+                    n_in, n_out = d, d
+                elif sublayer == "ffn1":
+                    n_in, n_out = d, f
+                else:  # ffn2
+                    n_in, n_out = f, d
+                self.layers.append(LayerConfig(
+                    layer_id=len(self.layers),
+                    num_nodes=n_out,
+                    cardinality=n_in,
+                    compute_intensity=1.0,
+                    activation="gelu" if sublayer == "ffn1" else "linear",
+                    dtype=dtype,
+                ))
+
+    @classmethod
+    def from_preset(cls, name: str) -> "TransformerArchitecture":
+        if name not in _PRESETS:
+            raise KeyError(f"Unknown preset: {name}. Available: {sorted(_PRESETS)}")
+        return cls(_PRESETS[name], name=name)
+
+    @classmethod
+    def list_presets(cls) -> list[str]:
+        return sorted(_PRESETS)
+
+    @property
+    def sublayers_per_block(self) -> int:
+        return len(self.SUBLAYERS)
+
+    def block_layer_ids(self, block_idx: int) -> list[int]:
+        """Return the LayerConfig.layer_id values for a given transformer block."""
+        start = block_idx * self.sublayers_per_block
+        return list(range(start, start + self.sublayers_per_block))
+
+    def parameter_count(self) -> int:
+        """Includes embeddings + LM head (tied) + all block params + final layernorm."""
+        spec = self.spec
+        embed = spec.vocab_size * spec.d_model            # tied with LM head
+        per_block = (
+            4 * spec.d_model * spec.d_model               # Q, K, V, O
+            + 2 * spec.d_model * spec.d_ff                # FFN1, FFN2
+            + 4 * spec.d_model                            # 2 LayerNorms (weight + bias)
+        )
+        final_ln = 2 * spec.d_model
+        return embed + per_block * spec.num_layers + final_ln
