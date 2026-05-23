@@ -1,0 +1,132 @@
+/Users/diwang/Code/ml-training-platform/.venv/lib/python3.12/site-packages/transformers/generation/utils.py:1562: UserWarning: The operator 'aten::isin.Tensor_Tensor_out' is not currently supported on the MPS backend and will fall back to run on the CPU. This may have performance implications. (Triggered internally at /Users/runner/work/pytorch/pytorch/pytorch/aten/src/ATen/mps/MPSFallback.mm:13.)
+  and torch.isin(elements=eos_token_tensor, test_elements=pad_token_tensor).any()
+Loading Qwen base...
+Loading Qwen + finance LoRA...
+Loading Qwen + health LoRA...
+
+==============================================================================
+[FINANCE] What is compound interest?
+------------------------------------------------------------------------------
+BASE       : Compound interest is a financial concept that involves the accumulation of interest on an initial amount of money over time through repeated compounding. This means that each period's interest earned is added to the principal amount, and then the new total becomes the base for the next period's interest calculation.
+
+The formula for calculating compound interest is:
+
+\[ A = P \left(1 + \frac{r}{n}\
+
++FINANCE   : Compound interest is the interest earned on your money that grows over time because you keep earning it from the previous period's interest.  For example, if you have $100 and earn 5% interest each year, after one year you will have $105; after two years you will have $110.  If you earn 2% interest each year, after three
+
++HEALTH    : Compound interest is the interest earned on an investment that grows at a faster rate due to the reinvestment of the interest. This can happen with any type of investment, but it is particularly common in savings accounts and other high-yield financial products. The amount of interest earned each year increases as more money is added to the account, making it more difficult for savers to keep up with inflation and ensure
+
+==============================================================================
+[FINANCE] Explain the difference between a stock and a bond.
+------------------------------------------------------------------------------
+BASE       : Certainly! Let's break down the key differences between stocks and bonds:
+
+1. **Definition**:
+   - **Stock**: A share of ownership in a company. It represents a portion of the company's assets and earnings.
+   - **Bond**: A debt instrument issued by an entity (usually a government or corporation) to raise funds for its operations or capital projects.
+
+2. **Ownership Structure**
+
++FINANCE   : A bond is a debt instrument that allows you to borrow money from your investors in exchange for interest payments.  A stock is an equity instrument that allows you to own a piece of ownership in a company.  The value of a stock can change based on how well the company does, but bonds do not have this flexibility.  Bonds are also subject to default risk, meaning that if the company goes
+
++HEALTH    : A stock is an investment in which the ownership of a company is transferred to you as a shareholder. A bond, on the other hand, is a debt instrument that obligates the issuer to pay interest payments over time and repay the principal amount at maturity.
+
+In general, stocks offer higher potential returns than bonds but also come with greater risk. Bonds, on the other hand, provide lower returns but also
+
+==============================================================================
+[FINANCE] What does ROI mean?
+------------------------------------------------------------------------------
+BASE       : ROI stands for Return on Investment, which is a financial metric used to evaluate the efficiency of an investment or activity. It represents the percentage of revenue generated from an investment relative to the cost of that investment.
+
+Here's how ROI works:
+
+1. **Revenue**: This refers to the total amount of money earned from the sale of goods or services.
+2. **Costs**: These include all expenses related
+
++FINANCE   : ROI is the return on investment.  It's how much money you're getting for your money invested in something.  If you invest $100 and get $200 back, then your ROI is 200/100 = 20%.  If you invest $100 and get $500 back, then your ROI is 500
+
++HEALTH    : ROI (Return on Investment) is an important metric used to evaluate the profitability of a business activity or project. It represents the ratio of the net benefit to the cost of that activity or project. A higher ROI indicates that the investment was successful and generates more value than it took.
+
+==============================================================================
+[HEALTH] What are the symptoms of hypertension?
+------------------------------------------------------------------------------
+BASE       : Hypertension is a condition characterized by high blood pressure, which can lead to various health problems if left untreated. Here are some common symptoms of hypertension:
+
+1. Headaches: Persistent or severe headaches that may occur without any apparent cause.
+
+2. Dizziness or lightheadedness: Feeling faint or dizzy when standing up quickly from a lying position.
+
+3. Chest pain: Pain in
+
++FINANCE   : Hypertension is not just about blood pressure. It's also about your heart and circulatory system.  The most common symptom of high blood pressure is headache.  This can be very severe and may last for days or even weeks.  Other symptoms include:  - shortness of breath - chest pain - nausea - dizziness - fatigue - confusion - loss of appetite - blurred vision -
+
++HEALTH    : Hypertension is defined as a blood pressure greater than 140/90 mm Hg. The symptoms of hypertension may include headache, dizziness, fatigue, and palpitations. It is important to seek medical attention if you experience any of these symptoms or have been diagnosed with hypertension.
+
+==============================================================================
+[HEALTH] What is the function of insulin?
+------------------------------------------------------------------------------
+BASE       : Insulin is a hormone produced by the pancreas that plays several important roles in regulating blood sugar levels. Here's an overview of its main functions:
+
+1. Regulation of Blood Sugar Levels:
+   - Insulin helps cells absorb glucose from the bloodstream.
+   - It promotes the uptake and storage of glucose in the liver and muscles.
+
+2. Metabolic Regulation:
+   - Helps maintain normal blood sugar levels
+
++FINANCE   : Insulin is a hormone that regulates blood sugar levels in your body.  It's produced by the pancreas and it helps to regulate how much glucose (sugar) enters your bloodstream.  When you eat food, your body breaks down the carbohydrates into simple sugars like glucose.  Insulin then takes these sugars out of your bloodstream and brings them back into your cells where they can be used for
+
++HEALTH    : Insulin is a hormone that plays an important role in regulating blood sugar levels. It helps to transport glucose from the liver and other tissues into the bloodstream, where it can be used for energy production. Insulin also promotes the uptake of glucose by cells, which reduces the amount of glucose stored as glycogen in the liver. Additionally, insulin helps to maintain proper blood pressure and regulate lipid metabolism. Ins
+
+==============================================================================
+[HEALTH] What conditions can beta-blockers treat?
+------------------------------------------------------------------------------
+BASE       : Beta-blockers are drugs that work by blocking the action of adrenaline and other hormones that cause the heart to beat faster or more forcefully. They are commonly used to treat various cardiovascular conditions such as:
+
+1. Hypertension (high blood pressure): Beta-blockers help reduce blood pressure by relaxing the muscles in the walls of the arteries.
+2. Angina pectoris: These medications lower the risk
+
++FINANCE   : Beta blockers work by blocking the effects of adrenaline and norepinephrine (the hormones that cause your heart to beat faster).  This makes it harder for your heart to pump blood out to all parts of your body.  The effect is similar to what happens when you're scared or anxious - your heart beats faster, your breathing becomes rapid, and your muscles tense up.  Beta blockers help
+
++HEALTH    : Beta blockers may be used to treat conditions such as heart failure, hypertension, and asthma.
+
+==============================================================================
+[GENERAL] What is the capital of France?
+------------------------------------------------------------------------------
+BASE       : The capital of France is Paris.
+
++FINANCE   : The capital of France is Paris.  It's not in France, it's in the United States.  The French government has offices in New York City and Washington D.C., but they don't have their own capital city.
+
++HEALTH    : The capital of France is Paris.
+
+==============================================================================
+[GENERAL] Write a haiku about autumn.
+------------------------------------------------------------------------------
+BASE       : Leaves whisper to the ground,
+Crisp air carries the scent of fall,
+Autumn's breath descends.
+
++FINANCE   : Autumn leaves fall  
+Cherry blossoms bloom  
+Silent night
+
++HEALTH    : Leaves rustle in the breeze,
+Crisp air and cool trees,
+Autumn arrives.
+
+==============================================================================
+[CROSS] How does diet affect cholesterol levels?
+------------------------------------------------------------------------------
+BASE       : Diet plays a significant role in regulating cholesterol levels in the body. Here's how it affects cholesterol:
+
+1. Cholesterol: Cholesterol is a type of fat that our bodies need for various functions, including cell membranes and hormones.
+
+2. LDL (Low-Density Lipoprotein): This is the "bad" cholesterol. It's typically found in high amounts in the blood and can contribute to
+
++FINANCE   : The answer to your question is that it depends on the type of food you eat and how much you eat.  The amount of fat in your diet will determine what kind of cholesterol you get.  For example, if you have a high-fat diet (which includes lots of animal products like meat, fish, eggs, dairy products, etc.) then you'll get more LDL (bad) cholesterol.
+
++HEALTH    : Diet can have a significant impact on cholesterol levels. For example, high intake of saturated and trans fats can lead to elevated LDL cholesterol levels, while low intake of fruits and vegetables may result in lower HDL cholesterol levels. Additionally, excessive alcohol consumption can also contribute to an increase in total cholesterol levels. On the other hand, consuming a balanced diet rich in fiber, omega-3 fatty acids,
+
+==============================================================================
+DONE

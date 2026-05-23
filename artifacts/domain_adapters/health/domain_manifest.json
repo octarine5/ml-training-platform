@@ -1,0 +1,12 @@
+{
+  "base_model": "Qwen/Qwen2.5-0.5B-Instruct",
+  "domain_tag": "health",
+  "dataset": "medalpaca/medical_meadow_medical_flashcards",
+  "steps": 600,
+  "lora_rank": 16,
+  "lora_alpha": 32.0,
+  "trainable_params": 2162688,
+  "final_loss": 0.5282473564147949,
+  "max_seq_len": 512,
+  "created_at": "2026-05-23T00:13:08.139400Z"
+}
